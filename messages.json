@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "sender_email": "james@gmail.com",
+    "sender_name": "james",
+    "sender_role": "tenant",
+    "recipient_email": "admin@gmail.com",
+    "recipient_name": "admin",
+    "subject": "garbage papers",
+    "message": "i would like to complain about receiving the garbage paper late ",
+    "is_read": false,
+    "created_at": "2026-04-29 23:25:16"
+  },
+  {
+    "id": 2,
+    "sender_email": "jane@gmail.com",
+    "sender_name": "jane ",
+    "sender_role": "landlord",
+    "recipient_email": "kibakaannie@gmail.com",
+    "recipient_name": "Annie Kibaka",
+    "subject": "rent",
+    "message": "pay rent",
+    "is_read": false,
+    "created_at": "2026-04-30 15:41:14"
+  }
+]

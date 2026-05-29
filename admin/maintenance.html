@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Maintenance | Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-tools"></i> Maintenance Management
+        </h1>
+        <p class="page-subtitle">View, assign, and manage all maintenance requests</p>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card" style="margin-bottom: 24px;">
+        <h3><i class="fas fa-filter"></i> Filter Requests</h3>
+        <form method="GET" action="{{ url_for('admin.maintenance') }}" class="d-flex" style="gap: 16px; flex-wrap: wrap;">
+            <select name="status" class="form-control" style="width: auto;">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="completed">Completed</option>
+            </select>
+            <select name="technician" class="form-control" style="width: auto;">
+                <option value="">All Technicians</option>
+                {% for tech in technicians %}
+                <option value="{{ tech.id }}">{{ tech.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Filter
+            </button>
+            <a href="{{ url_for('admin.maintenance') }}" class="btn btn-outline-primary">
+                <i class="fas fa-redo"></i> Reset
+            </a>
+        </form>
+    </div>
+
+    <!-- Maintenance Requests Table -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-clipboard-list"></i> All Maintenance Requests
+        </h3>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tenant</th>
+                        <th>Unit</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Assigned To</th>
+                        <th>Estimated Cost</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if requests %}
+                        {% for req in requests %}
+                        <tr>
+                            <td>#{{ req.id }}</td>
+                            <td>{{ req.tenant_name }}</td>
+                            <td>{{ req.unit_number }}</td>
+                            <td><strong>{{ req.title }}</strong></td>
+                            <td>{{ req.description|truncate(50) }}</td>
+                            <td>
+                                <span class="badge badge-{{ req.status }}">
+                                    {% if req.status == 'pending' %}
+                                        <i class="fas fa-clock"></i> Pending
+                                    {% elif req.status == 'in_progress' %}
+                                        <i class="fas fa-spinner fa-pulse"></i> In Progress
+                                    {% elif req.status == 'completed' %}
+                                        <i class="fas fa-check"></i> Completed
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('admin.reassign_technician', id=req.id) }}" style="display: flex; gap: 8px;">
+                                    <select name="technician_id" class="form-control" style="width: auto;">
+                                        {% for tech in technicians %}
+                                        <option value="{{ tech.id }}" {% if req.technician_id == tech.id %}selected{% endif %}>
+                                            {{ tech.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-sync-alt"></i> Reassign
+                                    </button>
+                                </form>
+                            </td>
+                            <td>KSh {{ req.estimated_cost|default(0)|format_currency }}</td>
+                            <td>{{ req.created_at.strftime('%b %d, %Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.view_maintenance', id=req.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                {% if req.image_url %}
+                                <a href="{{ req.image_url }}" target="_blank" class="btn btn-sm btn-info">
+                                    <i class="fas fa-image"></i> Photo
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="10" class="text-center">No maintenance requests found</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

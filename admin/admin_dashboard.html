@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | PropManage{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-chart-line"></i> Admin Dashboard
+        </h1>
+        <p class="page-subtitle">
+            <i class="fas fa-calendar-alt"></i> {{ now.strftime('%B %d, %Y') if now else 'Overview' }}
+        </p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="summary-cards">
+        <div class="card">
+            <h3><i class="fas fa-building"></i> Total Properties</h3>
+            <p class="card-value">{{ total_properties|default(0) }}</p>
+            <p class="card-meta">Active properties</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-users"></i> Total Tenants</h3>
+            <p class="card-value">{{ total_tenants|default(0) }}</p>
+            <p class="card-meta">Currently renting</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-door-open"></i> Vacant Units</h3>
+            <p class="card-value text-warning">{{ vacant_units|default(0) }}</p>
+            <p class="card-meta">Available for rent</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-tools"></i> Maintenance Requests</h3>
+            <p class="card-value text-info">{{ pending_maintenance|default(0) }}</p>
+            <p class="card-meta">Pending approval/action</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-credit-card"></i> Monthly Income</h3>
+            <p class="card-value text-success">KSh {{ monthly_income|default(0)|format_currency }}</p>
+            <p class="card-meta">Expected this month</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-chart-line"></i> Rent Arrears</h3>
+            <p class="card-value text-danger">KSh {{ total_arrears|default(0)|format_currency }}</p>
+            <p class="card-meta">Outstanding payments</p>
+        </div>
+    </div>
+
+    <!-- Vacancies Section -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-door-open"></i> Current Vacancies
+            <a href="{{ url_for('admin.add_vacancy') }}" class="btn btn-primary btn-sm" style="float: right;">
+                <i class="fas fa-plus"></i> Add Vacancy
+            </a>
+        </h3>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Unit Number</th>
+                        <th>Property</th>
+                        <th>Monthly Rent</th>
+                        <th>Bedrooms</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if vacancies %}
+                        {% for vacancy in vacancies %}
+                        <tr>
+                            <td><strong>{{ vacancy.unit_number }}</strong></td>
+                            <td>{{ vacancy.property_name }}</td>
+                            <td>KSh {{ vacancy.monthly_rent|format_currency }}</td>
+                            <td>{{ vacancy.bedrooms }}</td>
+                            <td>
+                                <span class="badge badge-pending">
+                                    <i class="fas fa-clock"></i> Vacant
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('admin.edit_vacancy', id=vacancy.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{{ url_for('admin.mark_rented', id=vacancy.id) }}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-check"></i> Mark Rented
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">No vacancies available</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Maintenance Requests -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-tools"></i> Recent Maintenance Requests
+            <a href="{{ url_for('admin.maintenance') }}" class="btn btn-primary btn-sm" style="float: right;">
+                <i class="fas fa-eye"></i> View All
+            </a>
+        </h3>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tenant</th>
+                        <th>Unit</th>
+                        <th>Issue</th>
+                        <th>Technician</th>
+                        <th>Status</th>
+                        <th>Estimated Cost</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if maintenance_requests %}
+                        {% for req in maintenance_requests[:5] %}
+                        <tr>
+                            <td>#{{ req.id }}</td>
+                            <td>{{ req.tenant_name }}</td>
+                            <td>{{ req.unit_number }}</td>
+                            <td>{{ req.title|truncate(30) }}</td>
+                            <td>{{ req.technician_name|default('Unassigned') }}</td>
+                            <td>
+                                <span class="badge badge-{{ req.status }}">
+                                    {{ req.status|replace('_', ' ')|capitalize }}
+                                </span>
+                            </td>
+                            <td>KSh {{ req.estimated_cost|default(0)|format_currency }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.view_maintenance', id=req.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">No maintenance requests</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Rent Arrears -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-exclamation-triangle"></i> Tenants with Rent Arrears
+        </h3>
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Tenant Name</th>
+                        <th>Unit</th>
+                        <th>Monthly Rent</th>
+                        <th>Arrears Amount</th>
+                        <th>Months Behind</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if arrears_tenants %}
+                        {% for tenant in arrears_tenants %}
+                        <tr>
+                            <td>{{ tenant.name }}</td>
+                            <td>{{ tenant.unit_number }}</td>
+                            <td>KSh {{ tenant.monthly_rent|format_currency }}</td>
+                            <td class="text-danger">KSh {{ tenant.arrears|format_currency }}</td>
+                            <td>{{ tenant.months_behind }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.view_tenant', id=tenant.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-user"></i> View
+                                </a>
+                                <a href="{{ url_for('admin.send_reminder', id=tenant.id) }}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-bell"></i> Send Reminder
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-success">
+                                <i class="fas fa-check-circle"></i> All tenants are up to date!
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Communication Log -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-comments"></i> Recent Communications (Tenant ↔ Technician)
+        </h3>
+        <div class="message-container">
+            {% if communications %}
+                {% for comm in communications[:10] %}
+                <div class="message-item">
+                    <div class="message-sender">
+                        <i class="fas fa-user-circle"></i> {{ comm.sender_name }}
+                        <span class="message-time">({{ comm.sender_role|capitalize }}) - {{ comm.timestamp.strftime('%b %d, %Y %H:%M') }}</span>
+                    </div>
+                    <div class="message-text">
+                        <strong>Request #{{ comm.request_id }}:</strong> {{ comm.message }}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center">No communications yet</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

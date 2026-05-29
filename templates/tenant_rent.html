@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Rent Details | Tenant{% endblock %}
+
+{% block content %}
+<div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+    <h1 style="color: #1e3c72;">Rent Details</h1>
+    
+    <div style="background: white; border-radius: 15px; padding: 25px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h3 style="color: #1e3c72; margin-bottom: 20px;">Payment Summary</h3>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 12px 0;"><strong>Monthly Rent:</strong></td>
+                <td style="padding: 12px 0;">KSh 18,500</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 12px 0;"><strong>Balance:</strong></td>
+                <td style="padding: 12px 0; color: #28a745; font-weight: bold;">KSh 0 (Up to Date)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 12px 0;"><strong>Next Due Date:</strong></td>
+                <td style="padding: 12px 0;">June 1, 2024</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 12px 0;"><strong>Deposit Amount:</strong></td>
+                <td style="padding: 12px 0;">KSh 18,500</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div style="background: white; border-radius: 15px; padding: 25px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h3 style="color: #1e3c72; margin-bottom: 20px;">Payment History</h3>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f8f9fa; border-bottom: 2px solid #ddd;">
+                    <th style="padding: 10px; text-align: left;">Date</th>
+                    <th style="padding: 10px; text-align: left;">Amount</th>
+                    <th style="padding: 10px; text-align: left;">Method</th>
+                    <th style="padding: 10px; text-align: left;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 10px;">May 1, 2024</td>
+                    <td style="padding: 10px;">KSh 18,500</td>
+                    <td style="padding: 10px;">M-PESA</td>
+                    <td style="padding: 10px; color: #28a745;">Paid ✓</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 10px;">April 1, 2024</td>
+                    <td style="padding: 10px;">KSh 18,500</td>
+                    <td style="padding: 10px;">Bank Transfer</td>
+                    <td style="padding: 10px; color: #28a745;">Paid ✓</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #ddd;">
+                    <td style="padding: 10px;">March 1, 2024</td>
+                    <td style="padding: 10px;">KSh 18,500</td>
+                    <td style="padding: 10px;">M-PESA</td>
+                    <td style="padding: 10px; color: #28a745;">Paid ✓</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <a href="/tenant/dashboard" style="background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 8px;">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

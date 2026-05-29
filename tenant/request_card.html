@@ -1,0 +1,72 @@
+<!-- Reusable component for displaying a request card -->
+<div class="request-card">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h4 class="request-title">
+                <i class="fas fa-tools"></i> {{ request.title }}
+                {% if request.priority == 'emergency' %}
+                    <span class="badge badge-danger" style="background:#dc3545;">EMERGENCY</span>
+                {% elif request.priority == 'urgent' %}
+                    <span class="badge badge-warning">URGENT</span>
+                {% endif %}
+            </h4>
+            <p class="request-meta">
+                <span><i class="fas fa-calendar"></i> Submitted: {{ request.created_at.strftime('%b %d, %Y') }}</span>
+                <span><i class="fas fa-tag"></i> Request #{{ request.id }}</span>
+                <span><i class="fas fa-user-cog"></i> 
+                    {% if request.technician %}
+                        Technician: {{ request.technician.name }}
+                    {% else %}
+                        Not assigned yet
+                    {% endif %}
+                </span>
+            </p>
+        </div>
+        <div>
+            <span class="badge badge-{{ request.status }}">
+                {% if request.status == 'pending' %}
+                    <i class="fas fa-clock"></i> Pending
+                {% elif request.status == 'in_progress' %}
+                    <i class="fas fa-spinner fa-pulse"></i> In Progress
+                {% elif request.status == 'completed' %}
+                    <i class="fas fa-check"></i> Completed
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    
+    <div class="request-meta">
+        <div><strong>Description:</strong> {{ request.description|truncate(100) }}</div>
+        {% if request.estimated_cost %}
+        <div><strong>Estimated Cost:</strong> KSh {{ request.estimated_cost|format_currency }}</div>
+        {% endif %}
+    </div>
+    
+    {% if request.image_url %}
+    <div class="mt-2">
+        <img src="{{ request.image_url }}" class="upload-thumbnail" alt="Issue photo">
+    </div>
+    {% endif %}
+    
+    <div class="d-flex gap-2 mt-3">
+        <a href="{{ url_for('tenant.view_maintenance', id=request.id) }}" class="btn btn-sm btn-primary">
+            <i class="fas fa-eye"></i> View Details
+        </a>
+        <a href="{{ url_for('tenant.messages') }}?request={{ request.id }}" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-comment"></i> Messages
+        </a>
+        {% if request.status != 'completed' %}
+        <button onclick="followUp({{ request.id }})" class="btn btn-sm btn-outline-warning">
+            <i class="fas fa-bell"></i> Follow Up
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function followUp(requestId) {
+    if (confirm('Send a follow-up message to the technician?')) {
+        window.location.href = "{{ url_for('tenant.view_maintenance', id=0) }}".replace('0', requestId);
+    }
+}
+</script>

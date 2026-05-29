@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Vacancies Management | Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h1 style="color: #1e3c72;">
+            <i class="fas fa-door-open"></i> Vacancies Management
+        </h1>
+        <p style="color: #666; margin-bottom: 20px;">Welcome, {{ user_name }}! Here are all available units.</p>
+        
+        <!-- Total Vacancies Card -->
+        <div style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 25px; border-radius: 15px; text-align: center; margin-bottom: 30px;">
+            <i class="fas fa-building" style="font-size: 48px;"></i>
+            <h2 style="margin: 15px 0 5px; font-size: 48px;">{{ total_vacancies }}</h2>
+            <p>Total Available Units (Vacancies)</p>
+        </div>
+        
+        <!-- Vacancy Summary by Type -->
+        <h3 style="color: #1e3c72; margin-bottom: 15px;">Vacancy Summary by Unit Type</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+            <div style="background: #17a2b8; color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                <i class="fas fa-bed" style="font-size: 32px;"></i>
+                <h3>Bedsitters</h3>
+                <p style="font-size: 36px; font-weight: bold; margin: 10px 0;">{{ bedsitter_count }}</p>
+                <small>Available</small>
+            </div>
+            <div style="background: #28a745; color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                <i class="fas fa-bed" style="font-size: 32px;"></i>
+                <h3>1 Bedroom</h3>
+                <p style="font-size: 36px; font-weight: bold; margin: 10px 0;">{{ one_bedroom_count }}</p>
+                <small>Available</small>
+            </div>
+            <div style="background: #ffc107; color: #333; padding: 20px; border-radius: 10px; text-align: center;">
+                <i class="fas fa-bed" style="font-size: 32px;"></i>
+                <i class="fas fa-bed" style="font-size: 32px;"></i>
+                <h3>2 Bedroom</h3>
+                <p style="font-size: 36px; font-weight: bold; margin: 10px 0;">{{ two_bedroom_count }}</p>
+                <small>Available</small>
+            </div>
+            <div style="background: #6c757d; color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                <i class="fas fa-bed" style="font-size: 32px;"></i>
+                <i class="fas fa-bed" style="font-size: 32px;"></i>
+                <i class="fas fa-bed" style="font-size: 32px;"></i>
+                <h3>3+ Bedroom</h3>
+                <p style="font-size: 36px; font-weight: bold; margin: 10px 0;">{{ three_bedroom_count }}</p>
+                <small>Available</small>
+            </div>
+        </div>
+        
+        <!-- Detailed Vacancies List with House Numbers -->
+        <h3 style="color: #1e3c72; margin-bottom: 15px;">Available Units (House Numbers)</h3>
+        
+        {% if vacancies and vacancies|length > 0 %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <thead>
+                    <tr style="background: #1e3c72; color: white;">
+                        <th style="padding: 15px; text-align: left;">House/Unit Number</th>
+                        <th style="padding: 15px; text-align: left;">Property Name</th>
+                        <th style="padding: 15px; text-align: left;">Unit Type</th>
+                        <th style="padding: 15px; text-align: left;">Bedrooms</th>
+                        <th style="padding: 15px; text-align: left;">Bathrooms</th>
+                        <th style="padding: 15px; text-align: left;">Floor</th>
+                        <th style="padding: 15px; text-align: left;">Monthly Rent (KSh)</th>
+                        <th style="padding: 15px; text-align: center;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vacancy in vacancies %}
+                    <tr style="border-bottom: 1px solid #ddd;">
+                        <td style="padding: 15px;">
+                            <strong><i class="fas fa-home"></i> {{ vacancy.unit_number }}</strong>
+                        </td>
+                        <td style="padding: 15px;">{{ vacancy.property_name }}</td>
+                        <td style="padding: 15px;">
+                            {% if vacancy.bedrooms == 0 %}
+                                Bedsitter
+                            {% elif vacancy.bedrooms == 1 %}
+                                1 Bedroom
+                            {% elif vacancy.bedrooms == 2 %}
+                                2 Bedroom
+                            {% else %}
+                                {{ vacancy.bedrooms }} Bedroom
+                            {% endif %}
+                        </td>
+                        <td style="padding: 15px; text-align: center;">{{ vacancy.bedrooms }}</td>
+                        <td style="padding: 15px; text-align: center;">{{ vacancy.bathrooms }}</td>
+                        <td style="padding: 15px;">{{ vacancy.floor }}</td>
+                        <td style="padding: 15px; color: #28a745; font-weight: bold;">KSh {{ vacancy.monthly_rent|format_currency }}</td>
+                        <td style="padding: 15px; text-align: center;">
+                            <span style="background: #28a745; color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px;">
+                                <i class="fas fa-check-circle"></i> Vacant
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 60px; background: #f8f9fa; border-radius: 10px;">
+            <i class="fas fa-door-open" style="font-size: 64px; color: #ccc;"></i>
+            <p style="margin-top: 20px;">No vacancies available. All units are occupied.</p>
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 30px;">
+            <a href="/admin/dashboard" class="btn-back">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-back {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
+.btn-back:hover {
+    background: #5a6268;
+}
+table tr:hover {
+    background: #f8f9fa;
+}
+</style>
+{% endblock %}

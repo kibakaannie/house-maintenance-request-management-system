@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "tenant_name": "Alex Johnson",
+    "property_name": "Sunset Apartments",
+    "amount": 18500,
+    "date": "2024-04-01",
+    "method": "M-PESA",
+    "status": "completed",
+    "recorded_by": "System",
+    "recorded_at": "2024-04-01 10:00:00"
+  },
+  {
+    "id": 2,
+    "tenant_name": "Mary Wanjiku",
+    "property_name": "Sunset Apartments",
+    "amount": 17000,
+    "date": "2024-04-02",
+    "method": "Bank Transfer",
+    "status": "completed",
+    "recorded_by": "System",
+    "recorded_at": "2024-04-02 10:00:00"
+  },
+  {
+    "id": 3,
+    "tenant_name": "James Otieno",
+    "property_name": "Green Valley Estate",
+    "amount": 22000,
+    "date": "2024-04-03",
+    "method": "M-PESA",
+    "status": "completed",
+    "recorded_by": "System",
+    "recorded_at": "2024-04-03 10:00:00"
+  },
+  {
+    "id": 4,
+    "tenant_name": "Alex Johnson",
+    "property_name": "Sunset Apartments",
+    "amount": 18500,
+    "date": "2024-03-01",
+    "method": "M-PESA",
+    "status": "completed",
+    "recorded_by": "System",
+    "recorded_at": "2024-03-01 10:00:00"
+  },
+  {
+    "id": 5,
+    "tenant_name": "Mary Wanjiku",
+    "property_name": "Sunset Apartments",
+    "amount": 17000,
+    "date": "2024-03-02",
+    "method": "Bank Transfer",
+    "status": "completed",
+    "recorded_by": "System",
+    "recorded_at": "2024-03-02 10:00:00"
+  },
+  {
+    "id": 6,
+    "tenant_name": "annie",
+    "property_name": "green valley",
+    "amount": 10000.0,
+    "date": "2025-07-04",
+    "method": "Bank Transfer",
+    "status": "completed",
+    "recorded_by": "admin",
+    "recorded_at": "2026-04-30 13:13:20"
+  }
+]

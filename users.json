@@ -1,0 +1,51 @@
+{
+  "kibakaannie@gmail.com": {
+    "name": "Annie Kibaka",
+    "email": "kibakaannie@gmail.com",
+    "password": "scrypt:32768:8:1$xg5mw31INIIeKazP$0b8178091102426dd7f32fd6de0decbbca472c1f403f03e361d1ee2e8d069dd553a775149035f8b9fdf0baf684b14d6ef05e9d2d976e29ef58129deb5570c645",
+    "role": "tenant",
+    "created_at": "2026-04-29 20:41:47"
+  },
+  "diallo@gmail.com": {
+    "name": "diallo ",
+    "email": "diallo@gmail.com",
+    "password": "scrypt:32768:8:1$W30D3G91kUdsATX2$090c91600a79a025aa934a606ccfbb09209140a9cf3bd66734eeaee21409d229842c5f9aea56389a1e932b2d7bdb655b39a9f829a0cd8c6a330a8778fa4e1521",
+    "role": "technician",
+    "created_at": "2026-04-29 20:42:48"
+  },
+  "admin@gmail.com": {
+    "name": "admin",
+    "email": "admin@gmail.com",
+    "password": "scrypt:32768:8:1$EMv33wODRYsEAtZX$14c83c79cc159c4aa7c431a4bc8a2274f734a1d29e95418c12121eaa252d494a75c5691f015baef016ec4a786ae48acc25ee806c5f52948afb79acbc93f78128",
+    "role": "property_manager",
+    "created_at": "2026-04-29 20:49:54"
+  },
+  "brian@gmail.com": {
+    "name": "brian",
+    "email": "brian@gmail.com",
+    "password": "scrypt:32768:8:1$njDoO01VUtn70cGy$ff360a2f50f08adc0b877b9ecaa2d5836a2a5e31fca894a51ab1dd03084ac025df1ea599bfdb6bac86f28f0a9880f65e33484547dc724c9bef95cceb481a3cb4",
+    "role": "property_manager",
+    "created_at": "2026-04-29 22:58:48"
+  },
+  "jane@gmail.com": {
+    "name": "jane ",
+    "email": "jane@gmail.com",
+    "password": "scrypt:32768:8:1$t0JHI4wydDAN2Zl9$bc53177d17fcf046253ca1efc45d7a641afa581678f8bf8979a22e2f3ae0035ce9114c2ca154b78dff814404d0fd798ff5d9dfa5792d1f61a327b1d9a0e74ba4",
+    "role": "landlord",
+    "created_at": "2026-04-29 22:59:51"
+  },
+  "james@gmail.com": {
+    "name": "james",
+    "email": "james@gmail.com",
+    "password": "scrypt:32768:8:1$ZftMahDWGJRhmkJe$7335375896e112fda55bdbdf2a1532bfe66e1048bdea54e8e92eafb494c2ce47fdcf333d98b9e010fba781ca9f9d75006b0044a7fcfdb10f0d844638c844017f",
+    "role": "tenant",
+    "created_at": "2026-04-29 23:01:39"
+  },
+  "annie@gmail.com": {
+    "name": "Annie Kibaka",
+    "email": "annie@gmail.com",
+    "password": "scrypt:32768:8:1$qsGpQ4YS4VjkyLI9$c6069abade4a4117974db5fed08a42babff5bf7156d91cdee56dcd6bea59d7c26d5238974040709029e7376bd931bf4221399774aa32e993fa680a9296361e75",
+    "role": "tenant",
+    "created_at": "2026-04-29 23:34:33"
+  }
+}

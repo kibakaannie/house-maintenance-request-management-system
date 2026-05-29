@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Request #{{ request.id }} | Maintenance{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-clipboard-list"></i> Maintenance Request #{{ request.id }}
+        </h1>
+        <p class="page-subtitle">
+            <i class="fas fa-calendar"></i> Submitted on {{ request.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+        </p>
+    </div>
+
+    <div class="summary-cards">
+        <!-- Request Details Card -->
+        <div class="card">
+            <h3><i class="fas fa-info-circle"></i> Request Details</h3>
+            <div class="form-group">
+                <label><strong>Title:</strong></label>
+                <p>{{ request.title }}</p>
+            </div>
+            <div class="form-group">
+                <label><strong>Description:</strong></label>
+                <p>{{ request.description }}</p>
+            </div>
+            <div class="form-group">
+                <label><strong>Status:</strong></label>
+                <p>
+                    <span class="badge badge-{{ request.status }}">
+                        {% if request.status == 'pending' %}
+                            <i class="fas fa-clock"></i> Pending - Waiting for technician assignment
+                        {% elif request.status == 'in_progress' %}
+                            <i class="fas fa-spinner fa-pulse"></i> In Progress - Technician is working on it
+                        {% elif request.status == 'completed' %}
+                            <i class="fas fa-check"></i> Completed - Repair finished
+                        {% endif %}
+                    </span>
+                </p>
+            </div>
+            <div class="form-group">
+                <label><strong>Priority:</strong></label>
+                <p>
+                    {% if request.priority == 'emergency' %}
+                        <span class="badge badge-danger">Emergency</span>
+                    {% elif request.priority == 'urgent' %}
+                        <span class="badge badge-warning">Urgent</span>
+                    {% else %}
+                        <span class="badge badge-info">Normal</span>
+                    {% endif %}
+                </p>
+            </div>
+            {% if request.image_url %}
+            <div class="form-group">
+                <label><strong>Issue Photo:</strong></label>
+                <div>
+                    <img src="{{ request.image_url }}" class="upload-preview" alt="Issue photo">
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Technician Info Card -->
+        <div class="card">
+            <h3><i class="fas fa-user-cog"></i> Technician Information</h3>
+            {% if request.technician %}
+                <div class="form-group">
+                    <label><strong>Name:</strong></label>
+                    <p>{{ request.technician.name }}</p>
+                </div>
+                <div class="form-group">
+                    <label><strong>Specialty:</strong></label>
+                    <p>{{ request.technician.specialty|default('General') }}</p>
+                </div>
+                <div class="form-group">
+                    <label><strong>Estimated Cost:</strong></label>
+                    <p class="text-success">
+                        {% if request.estimated_cost %}
+                            KSh {{ request.estimated_cost|format_currency }}
+                        {% else %}
+                            <span class="text-muted">To be determined</span>
+                        {% endif %}
+                    </p>
+                </div>
+            {% else %}
+                <p class="text-muted">No technician assigned yet. Please check back later.</p>
+            {% endif %}
+        </div>
+
+        <!-- Timeline Card -->
+        <div class="card">
+            <h3><i class="fas fa-history"></i> Timeline</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fas fa-plus-circle"></i></div>
+                    <div class="timeline-content">
+                        <strong>Request Submitted</strong>
+                        <p>{{ request.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                    </div>
+                </div>
+                
+                {% if request.status == 'in_progress' or request.status == 'completed' %}
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="timeline-content">
+                        <strong>Technician Assigned</strong>
+                        <p>{{ request.assigned_at.strftime('%B %d, %Y at %I:%M %p') if request.assigned_at else 'Pending' }}</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if request.status == 'completed' %}
+                <div class="timeline-item">
+                    <div class="timeline-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="timeline-content">
+                        <strong>Request Completed</strong>
+                        <p>{{ request.completed_at.strftime('%B %d, %Y at %I:%M %p') if request.completed_at else 'N/A' }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Communication Thread -->
+        <div class="card full-width">
+            <h3><i class="fas fa-comments"></i> Communication with Technician</h3>
+            <div class="message-container" style="max-height: 400px;">
+                {% if communications %}
+                    {% for comm in communications %}
+                    <div class="message-item">
+                        <div class="message-sender">
+                            <i class="fas fa-user-circle"></i> {{ comm.sender_name }}
+                            <span class="message-time">({{ comm.sender_role|capitalize }}) - {{ comm.timestamp.strftime('%b %d, %Y %I:%M %p') }}</span>
+                        </div>
+                        <div class="message-text">{{ comm.message }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center">No messages yet. Start a conversation with the technician.</p>
+                {% endif %}
+            </div>
+            
+            <form method="POST" action="{{ url_for('tenant.send_message', id=request.id) }}" style="margin-top: 16px;">
+                <div class="form-group">
+                    <label><i class="fas fa-pen"></i> Send Message to Technician</label>
+                    <textarea name="message" class="form-control" rows="3" 
+                              placeholder="Type your message here..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-3">
+        <a href="{{ url_for('tenant.maintenance') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to My Requests
+        </a>
+        <a href="{{ url_for('tenant_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-tachometer-alt"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.timeline-content {
+    padding-left: 10px;
+}
+
+.timeline-content strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.timeline-content p {
+    margin: 0;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}

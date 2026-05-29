@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | PropManage{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1 style="color: #1e3c72;">Admin Dashboard</h1>
+    <p>Welcome back, {{ user_name }}!</p>
+    
+    <!-- Statistics Cards - ALL CLICKABLE -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+        
+        <!-- Tenants Card -->
+        <a href="/admin/tenants" style="background: white; padding: 25px; border-radius: 15px; text-decoration: none; color: #333; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s; display: block; cursor: pointer;">
+            <i class="fas fa-users" style="font-size: 48px; color: #1e3c72;"></i>
+            <h3 style="margin: 10px 0 5px;">Tenants</h3>
+            <p style="font-size: 32px; font-weight: bold; margin: 10px 0;">{{ tenants_count|default(0) }}</p>
+            <small style="color: #666;">Active Tenants</small>
+        </a>
+        
+        <!-- Properties Card -->
+        <a href="/admin/properties" style="background: white; padding: 25px; border-radius: 15px; text-decoration: none; color: #333; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s; display: block; cursor: pointer;">
+            <i class="fas fa-building" style="font-size: 48px; color: #1e3c72;"></i>
+            <h3 style="margin: 10px 0 5px;">Properties</h3>
+            <p style="font-size: 32px; font-weight: bold; margin: 10px 0;">{{ properties_count|default(0) }}</p>
+            <small style="color: #666;">Total Properties</small>
+        </a>
+        
+        <!-- Vacancies Card -->
+        <a href="/admin/vacancies" style="background: white; padding: 25px; border-radius: 15px; text-decoration: none; color: #333; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s; display: block; cursor: pointer;">
+            <i class="fas fa-door-open" style="font-size: 48px; color: #1e3c72;"></i>
+            <h3 style="margin: 10px 0 5px;">Vacancies</h3>
+            <p style="font-size: 32px; font-weight: bold; margin: 10px 0;">{{ vacancies_count|default(0) }}</p>
+            <small style="color: #666;">Available Units</small>
+        </a>
+        
+        <!-- Maintenance Card -->
+        <a href="/admin/maintenance" style="background: white; padding: 25px; border-radius: 15px; text-decoration: none; color: #333; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: all 0.3s; display: block; cursor: pointer;">
+            <i class="fas fa-tools" style="font-size: 48px; color: #1e3c72;"></i>
+            <h3 style="margin: 10px 0 5px;">Maintenance</h3>
+            <p style="font-size: 32px; font-weight: bold; margin: 10px 0;">{{ pending_maintenance|default(0) }}</p>
+            <small style="color: #666;">Pending Requests</small>
+        </a>
+    </div>
+    
+    <!-- Quick Action Buttons -->
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 30px;">
+        <a href="/admin/tenants" class="action-btn">Manage Tenants</a>
+        <a href="/admin/properties" class="action-btn">Manage Properties</a>
+        <a href="/admin/vacancies" class="action-btn">View Vacancies</a>
+        <a href="/admin/maintenance" class="action-btn">Maintenance Requests</a>
+        <a href="/admin/finance" class="action-btn">Financial Reports</a>
+        <a href="/messages" class="action-btn">Messages</a>
+    </div>
+</div>
+
+<style>
+.action-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #1e3c72;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.action-btn:hover {
+    background: #2a5298;
+    transform: translateY(-2px);
+}
+
+a[style*="background: white"]:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}

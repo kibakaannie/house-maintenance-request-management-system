@@ -1,0 +1,61 @@
+{
+  "1": {
+    "id": 1,
+    "title": "sockets",
+    "description": "i need my sockets repaired",
+    "priority": "urgent",
+    "status": "completed",
+    "date": "2026-04-29",
+    "created_at": "2026-04-29 20:42:25",
+    "tenant_email": "kibakaannie@gmail.com",
+    "tenant_name": "Annie Kibaka",
+    "technician_email": "diallo@gmail.com",
+    "technician_name": "diallo ",
+    "estimated_cost": 1280.0
+  },
+  "2": {
+    "id": 2,
+    "title": "leaking pipe",
+    "description": "the pipe under my sink seems to be leaking and i need it fixed before the weekend kindly",
+    "priority": "urgent",
+    "status": "completed",
+    "date": "2026-04-29",
+    "created_at": "2026-04-29 23:41:36",
+    "tenant_email": "james@gmail.com",
+    "tenant_name": "james",
+    "technician_email": "diallo@gmail.com",
+    "technician_name": "diallo ",
+    "estimated_cost": 2390.0,
+    "image_url": null
+  },
+  "3": {
+    "id": 3,
+    "title": "broken tap",
+    "description": "the tap in my kitchen is broken",
+    "priority": "emergency",
+    "status": "in_progress",
+    "date": "2026-04-30",
+    "created_at": "2026-04-30 00:17:25",
+    "tenant_email": "annie@gmail.com",
+    "tenant_name": "Annie Kibaka",
+    "technician_email": "diallo@gmail.com",
+    "technician_name": "diallo ",
+    "estimated_cost": 3500.0,
+    "image_url": "/static/uploads/20260430_001725_pexels-sudipta-mondal-74513527-8776927.jpg"
+  },
+  "4": {
+    "id": 4,
+    "title": "broken tap",
+    "description": "not working",
+    "priority": "urgent",
+    "status": "pending",
+    "date": "2026-04-30",
+    "created_at": "2026-04-30 11:52:08",
+    "tenant_email": "annie@gmail.com",
+    "tenant_name": "Annie Kibaka",
+    "technician_email": null,
+    "technician_name": "Not assigned yet",
+    "estimated_cost": null,
+    "image_url": "/static/uploads/20260430_115207_pexels-zulfugarkarimov-34295404.jpg"
+  }
+}

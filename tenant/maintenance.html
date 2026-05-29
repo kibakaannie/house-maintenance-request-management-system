@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance Requests | Tenant{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-tools"></i> Maintenance Requests
+        </h1>
+        <p class="page-subtitle">Submit and track your maintenance requests</p>
+    </div>
+
+    <!-- Submit New Request Form -->
+    <div class="card" style="margin-bottom: 24px;">
+        <h3><i class="fas fa-plus-circle"></i> Submit New Maintenance Request</h3>
+        <form method="POST" action="{{ url_for('tenant.maintenance') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label><i class="fas fa-heading"></i> Title *</label>
+                <input type="text" name="title" class="form-control" placeholder="e.g., Leaking Faucet, AC not working" required>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-align-left"></i> Description *</label>
+                <textarea name="description" class="form-control" rows="4" 
+                          placeholder="Please provide detailed description of the issue..." required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-exclamation-triangle"></i> Priority</label>
+                <select name="priority" class="form-control">
+                    <option value="normal">Normal</option>
+                    <option value="urgent">Urgent</option>
+                    <option value="emergency">Emergency</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-camera"></i> Upload Photos (Optional)</label>
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <p class="upload-text">Click or drag & drop to upload photos</p>
+                    <p class="upload-hint">Supports: JPG, PNG, GIF (Max 5MB)</p>
+                    <input type="file" name="image" id="fileInput" accept="image/*" style="display: none;">
+                </div>
+                <div id="imagePreview" class="image-gallery"></div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Submit Request
+            </button>
+        </form>
+    </div>
+
+    <!-- My Requests List -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-clipboard-list"></i> My Maintenance Requests
+            <span class="badge badge-info">{{ requests|length }} Total</span>
+        </h3>
+        
+        {% if requests %}
+            {% for req in requests %}
+            <div class="request-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h4 class="request-title">
+                            {{ req.title }}
+                            {% if req.priority == 'emergency' %}
+                                <span class="badge badge-danger" style="background:#dc3545;">EMERGENCY</span>
+                            {% elif req.priority == 'urgent' %}
+                                <span class="badge badge-warning">URGENT</span>
+                            {% endif %}
+                        </h4>
+                        <p class="request-meta">
+                            <span><i class="fas fa-calendar"></i> Submitted: {{ req.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                            <span><i class="fas fa-tag"></i> Request #{{ req.id }}</span>
+                        </p>
+                    </div>
+                    <div>
+                        <span class="badge badge-{{ req.status }}">
+                            {% if req.status == 'pending' %}
+                                <i class="fas fa-clock"></i> Pending
+                            {% elif req.status == 'in_progress' %}
+                                <i class="fas fa-spinner fa-pulse"></i> In Progress
+                            {% elif req.status == 'completed' %}
+                                <i class="fas fa-check"></i> Completed
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="request-meta">
+                    <div><strong>Description:</strong> {{ req.description }}</div>
+                    {% if req.technician %}
+                    <div><strong>Assigned Technician:</strong> {{ req.technician.name }}</div>
+                    {% endif %}
+                    {% if req.estimated_cost %}
+                    <div><strong>Estimated Cost:</strong> KSh {{ req.estimated_cost|format_currency }}</div>
+                    {% endif %}
+                </div>
+                
+                {% if req.image_url %}
+                <div class="mt-2">
+                    <img src="{{ req.image_url }}" class="upload-thumbnail" alt="Issue photo">
+                </div>
+                {% endif %}
+                
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('tenant.view_maintenance', id=req.id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    <a href="{{ url_for('tenant.messages') }}?request={{ req.id }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-comment"></i> Messages
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> You haven't submitted any maintenance requests yet.
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Image upload preview
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const imagePreview = document.getElementById('imagePreview');
+
+uploadArea.addEventListener('click', () => {
+    fileInput.click();
+});
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('dragover');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+        fileInput.files = e.dataTransfer.files;
+        previewImage(file);
+    }
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+        previewImage(e.target.files[0]);
+    }
+});
+
+function previewImage(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        imagePreview.innerHTML = `
+            <div class="image-container">
+                <img src="${e.target.result}" class="upload-thumbnail" alt="Preview">
+                <span class="remove-image" onclick="removeImage()">&times;</span>
+            </div>
+        `;
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+    imagePreview.innerHTML = '';
+    fileInput.value = '';
+}
+</script>
+{% endblock %}

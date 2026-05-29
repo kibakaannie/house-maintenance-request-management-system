@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}New Maintenance Request | Tenant{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto; padding: 20px;">
+    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h1 style="color: #1e3c72; margin-bottom: 20px;">
+            <i class="fas fa-plus-circle"></i> New Maintenance Request
+        </h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="padding: 12px; margin-bottom: 20px; border-radius: 8px; 
+                        {% if category == 'success' %}background: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+                        {% elif category == 'danger' %}background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- FORM WITH IMAGE UPLOAD - ADD enctype="multipart/form-data" -->
+        <form method="POST" action="/tenant/new-request" enctype="multipart/form-data">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">Request Title *</label>
+                <input type="text" name="title" required 
+                       style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+                <small style="color: #666;">Example: "Leaking faucet", "AC not working", etc.</small>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">Priority *</label>
+                <select name="priority" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                    <option value="normal">Normal - Routine issue</option>
+                    <option value="urgent">Urgent - Needs attention soon</option>
+                    <option value="emergency">Emergency - Immediate attention required</option>
+                </select>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">Description *</label>
+                <textarea name="description" rows="5" required 
+                          style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                          placeholder="Please provide detailed description of the issue..."></textarea>
+            </div>
+            
+            <!-- ============ IMAGE UPLOAD FIELD - ADD THIS SECTION ============ -->
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+                    <i class="fas fa-camera"></i> Upload Photo (Optional)
+                </label>
+                <div class="upload-area" id="uploadArea" style="
+                    border: 2px dashed #ddd;
+                    border-radius: 12px;
+                    padding: 30px;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    background: #f8f9fa;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #999; margin-bottom: 10px;"></i>
+                    <p style="margin: 0; color: #666;">Click or drag & drop to upload a photo</p>
+                    <small style="color: #999;">Supports: JPG, PNG, GIF (Max 5MB)</small>
+                    <input type="file" name="photo" id="photoInput" accept="image/*" style="display: none;">
+                </div>
+                <div id="imagePreview" style="margin-top: 15px; display: none;">
+                    <div style="position: relative; display: inline-block;">
+                        <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #ddd;">
+                        <button type="button" onclick="removeImage()" style="position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">&times;</button>
+                    </div>
+                </div>
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    <i class="fas fa-info-circle"></i> Adding a photo helps technicians understand the issue better
+                </small>
+            </div>
+            <!-- ============ END IMAGE UPLOAD FIELD ============ -->
+            
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-paper-plane"></i> Submit Request
+                </button>
+                <a href="/tenant/maintenance" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.btn {
+    display: inline-block;
+    padding: 10px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+.btn-success:hover {
+    background: #218838;
+}
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+.btn-secondary:hover {
+    background: #5a6268;
+}
+.upload-area:hover {
+    border-color: #1e3c72;
+    background: #e8f4f8;
+}
+</style>
+
+<script>
+// Image upload preview
+const uploadArea = document.getElementById('uploadArea');
+const photoInput = document.getElementById('photoInput');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+uploadArea.addEventListener('click', () => {
+    photoInput.click();
+});
+
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = '#1e3c72';
+    uploadArea.style.background = '#e8f4f8';
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.style.borderColor = '#ddd';
+    uploadArea.style.background = '#f8f9fa';
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = '#ddd';
+    uploadArea.style.background = '#f8f9fa';
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+        photoInput.files = e.dataTransfer.files;
+        previewImage(file);
+    }
+});
+
+photoInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+        previewImage(e.target.files[0]);
+    }
+});
+
+function previewImage(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        imagePreview.style.display = 'block';
+        uploadArea.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+    imagePreview.style.display = 'none';
+    uploadArea.style.display = 'block';
+    photoInput.value = '';
+}
+</script>
+{% endblock %}

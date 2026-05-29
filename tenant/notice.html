@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Notice to Vacate | Tenant{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-door-open"></i> Notice to Vacate
+        </h1>
+        <p class="page-subtitle">Submit your 30-day notice to terminate tenancy</p>
+    </div>
+
+    {% if notice %}
+    <!-- Existing Notice Display -->
+    <div class="card">
+        <h3><i class="fas fa-file-signature"></i> Your Notice Status</h3>
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> You have already submitted a notice to vacate.
+        </div>
+        
+        <div class="summary-cards">
+            <div class="card">
+                <h4>Status</h4>
+                <p class="card-value text-warning">{{ notice.status|capitalize }}</p>
+            </div>
+            <div class="card">
+                <h4>Vacate Date</h4>
+                <p class="card-value">{{ notice.vacate_date.strftime('%B %d, %Y') }}</p>
+            </div>
+            <div class="card">
+                <h4>Days Remaining</h4>
+                <p class="card-value">{{ days_remaining|default(0) }}</p>
+            </div>
+        </div>
+        
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> 
+            {% if notice.status == 'pending' %}
+                Your notice is pending review by the property manager.
+            {% elif notice.status == 'approved' %}
+                Your notice has been approved. Please vacate by the specified date.
+            {% endif %}
+        </div>
+        
+        {% if notice.status == 'pending' %}
+        <button onclick="confirmCancel()" class="btn btn-danger">
+            <i class="fas fa-times"></i> Cancel Notice
+        </button>
+        {% endif %}
+    </div>
+    
+    <script>
+    function confirmCancel() {
+        if (confirm('Are you sure you want to cancel your notice to vacate?')) {
+            window.location.href = "{{ url_for('tenant.cancel_notice') }}";
+        }
+    }
+    </script>
+    
+    {% else %}
+    <!-- Submit New Notice Form -->
+    <div class="card">
+        <h3><i class="fas fa-file-signature"></i> Submit 30-Day Notice</h3>
+        
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <strong>Important:</strong> By submitting this notice, you agree to vacate the property within 30 days.
+            Please ensure all rent arrears are cleared before vacating.
+        </div>
+        
+        <form method="POST" action="{{ url_for('tenant.notice') }}">
+            <div class="form-group">
+                <label><i class="fas fa-calendar"></i> Proposed Vacate Date</label>
+                <input type="date" name="vacate_date" class="form-control" 
+                       min="{{ min_date }}" max="{{ max_date }}" required>
+                <small class="text-muted">Please select a date at least 30 days from today</small>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-align-left"></i> Reason for Vacating (Optional)</label>
+                <textarea name="reason" class="form-control" rows="4" 
+                          placeholder="Please provide a reason for leaving..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-check-circle"></i> Confirmation</label>
+                <label class="d-flex align-items-center">
+                    <input type="checkbox" name="confirm" required style="margin-right: 10px;">
+                    I confirm that I have read and understood the terms of vacating the property.
+                </label>
+            </div>
+            
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-paper-plane"></i> Submit Notice to Vacate
+                </button>
+                <a href="{{ url_for('tenant_dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Information Section -->
+    <div class="section" style="margin-top: 24px;">
+        <h3 class="section-title">
+            <i class="fas fa-info-circle"></i> Important Information
+        </h3>
+        
+        <div class="summary-cards">
+            <div class="card">
+                <h4><i class="fas fa-clock"></i> Notice Period</h4>
+                <p>You must provide at least 30 days' notice before vacating the property.</p>
+            </div>
+            
+            <div class="card">
+                <h4><i class="fas fa-money-bill"></i> Outstanding Payments</h4>
+                <p>All rent arrears must be cleared before the vacate date.</p>
+                <p><strong>Current Balance:</strong> KSh {{ tenant.balance|format_currency }}</p>
+            </div>
+            
+            <div class="card">
+                <h4><i class="fas fa-clipboard-check"></i> Property Inspection</h4>
+                <p>A final inspection will be scheduled before you vacate to assess any damages.</p>
+            </div>
+            
+            <div class="card">
+                <h4><i class="fas fa-key"></i> Key Return</h4>
+                <p>All keys, access cards, and remotes must be returned on or before the vacate date.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Set min date to 30 days from now
+const today = new Date();
+const minDate = new Date(today);
+minDate.setDate(today.getDate() + 30);
+const maxDate = new Date(today);
+maxDate.setDate(today.getDate() + 60);
+
+const dateInput = document.querySelector('input[name="vacate_date"]');
+if (dateInput) {
+    dateInput.min = minDate.toISOString().split('T')[0];
+    dateInput.max = maxDate.toISOString().split('T')[0];
+}
+</script>
+{% endblock %}

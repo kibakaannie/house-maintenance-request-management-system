@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance Request #{{ request.id }} | Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-clipboard-list"></i> Maintenance Request #{{ request.id }}
+        </h1>
+        <p class="page-subtitle">Submitted by {{ request.tenant_name }} on {{ request.created_at.strftime('%B %d, %Y') }}</p>
+    </div>
+
+    <div class="summary-cards">
+        <!-- Request Details -->
+        <div class="card">
+            <h3><i class="fas fa-info-circle"></i> Request Details</h3>
+            <p><strong>Title:</strong> {{ request.title }}</p>
+            <p><strong>Description:</strong> {{ request.description }}</p>
+            <p><strong>Unit:</strong> {{ request.unit_number }}</p>
+            <p><strong>Status:</strong> 
+                <span class="badge badge-{{ request.status }}">
+                    {{ request.status|replace('_', ' ')|capitalize }}
+                </span>
+            </p>
+            {% if request.image_url %}
+            <div class="upload-area">
+                <img src="{{ request.image_url }}" class="upload-preview" alt="Issue photo">
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Assignment & Cost -->
+        <div class="card">
+            <h3><i class="fas fa-tools"></i> Assignment & Cost</h3>
+            <form method="POST" action="{{ url_for('admin.update_maintenance', id=request.id) }}">
+                <div class="form-group">
+                    <label>Assign Technician</label>
+                    <select name="technician_id" class="form-control" required>
+                        {% for tech in technicians %}
+                        <option value="{{ tech.id }}" {% if request.technician_id == tech.id %}selected{% endif %}>
+                            {{ tech.name }} - {{ tech.specialty }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estimated Cost (KSh)</label>
+                    <input type="number" name="estimated_cost" class="form-control" value="{{ request.estimated_cost|default('') }}">
+                </div>
+                <div class="form-group">
+                    <label>Update Status</label>
+                    <select name="status" class="form-control">
+                        <option value="pending" {% if request.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="in_progress" {% if request.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                        <option value="completed" {% if request.status == 'completed' %}selected{% endif %}>Completed</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Request
+                </button>
+            </form>
+        </div>
+
+        <!-- Communication Thread -->
+        <div class="card full-width">
+            <h3><i class="fas fa-comments"></i> Communication Thread</h3>
+            <div class="message-container" style="max-height: 400px;">
+                {% for msg in communications %}
+                <div class="message-item">
+                    <div class="message-sender">
+                        <i class="fas fa-user-circle"></i> {{ msg.sender_name }}
+                        <span class="message-time">({{ msg.sender_role|capitalize }}) - {{ msg.timestamp.strftime('%b %d, %Y %H:%M') }}</span>
+                    </div>
+                    <div class="message-text">{{ msg.message }}</div>
+                </div>
+                {% else %}
+                <p class="text-center">No messages yet</p>
+                {% endfor %}
+            </div>
+            
+            <form method="POST" action="{{ url_for('admin.add_comment', id=request.id) }}" style="margin-top: 16px;">
+                <div class="form-group">
+                    <textarea name="message" class="form-control" rows="3" placeholder="Add a comment or reply..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="d-flex" style="gap: 16px; margin-top: 24px;">
+        <a href="{{ url_for('admin.maintenance') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left"></i> Back to All Requests
+        </a>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-tachometer-alt"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

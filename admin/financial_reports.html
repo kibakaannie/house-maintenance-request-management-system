@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Financial Reports | Admin{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-chart-line"></i> Financial Reports
+        </h1>
+        <p class="page-subtitle">Track income, expenses, and rent collection</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+        <div class="card">
+            <h3><i class="fas fa-arrow-up"></i> Total Income (YTD)</h3>
+            <p class="card-value text-success">KSh {{ total_income_ytd|default(0)|format_currency }}</p>
+            <p class="card-meta">Year to date</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-arrow-down"></i> Expected Income</h3>
+            <p class="card-value text-info">KSh {{ expected_income|default(0)|format_currency }}</p>
+            <p class="card-meta">This month</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-chart-line"></i> Collection Rate</h3>
+            <p class="card-value">{{ collection_rate|default(0) }}%</p>
+            <p class="card-meta">Rent collected vs expected</p>
+        </div>
+    </div>
+
+    <!-- Monthly Income Chart -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-chart-bar"></i> Monthly Income (Last 6 Months)
+        </h3>
+        <canvas id="incomeChart" style="max-height: 400px; width: 100%;"></canvas>
+    </div>
+
+    <!-- Income Breakdown -->
+    <div class="summary-cards">
+        <div class="card">
+            <h3><i class="fas fa-home"></i> Income by Property</h3>
+            <table class="data-table">
+                {% for property in property_income %}
+                <tr>
+                    <td>{{ property.name }}</td>
+                    <td class="text-right">KSh {{ property.income|format_currency }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-credit-card"></i> Recent Rent Payments</h3>
+            <div class="message-container" style="max-height: 300px;">
+                {% for payment in recent_payments %}
+                <div class="message-item">
+                    <div class="message-sender">{{ payment.tenant_name }}</div>
+                    <div>Paid KSh {{ payment.amount|format_currency }}</div>
+                    <small>{{ payment.date.strftime('%b %d, %Y') }}</small>
+                </div>
+                {% else %}
+                <p class="text-center">No recent payments</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const ctx = document.getElementById('incomeChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: {{ months|tojson }},
+        datasets: [{
+            label: 'Monthly Income (KSh)',
+            data: {{ income_data|tojson }},
+            backgroundColor: '#2a5298',
+            borderRadius: 8
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'top' },
+            tooltip: { callbacks: { label: function(context) { return 'KSh ' + context.raw.toLocaleString(); } } }
+        }
+    }
+});
+</script>
+{% endblock %}

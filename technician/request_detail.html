@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Request #{{ request.id }} | Technician{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-clipboard-list"></i> Maintenance Request #{{ request.id }}
+        </h1>
+        <p class="page-subtitle">
+            <i class="fas fa-user"></i> Tenant: {{ tenant.full_name if tenant else 'Unknown' }} | 
+            <i class="fas fa-building"></i> Unit: {{ request.unit_number }}
+        </p>
+    </div>
+
+    <div class="summary-cards">
+        <!-- Request Details Card -->
+        <div class="card">
+            <h3><i class="fas fa-info-circle"></i> Request Details</h3>
+            <div class="form-group">
+                <label><strong>Title:</strong></label>
+                <p>{{ request.title }}</p>
+            </div>
+            <div class="form-group">
+                <label><strong>Description:</strong></label>
+                <p>{{ request.description }}</p>
+            </div>
+            <div class="form-group">
+                <label><strong>Status:</strong></label>
+                <p>
+                    <span class="badge badge-{{ request.status }}">
+                        {{ request.status|replace('_', ' ')|capitalize }}
+                    </span>
+                </p>
+            </div>
+            <div class="form-group">
+                <label><strong>Submitted:</strong></label>
+                <p>{{ request.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+            </div>
+            {% if request.image_url %}
+            <div class="form-group">
+                <label><strong>Issue Photo:</strong></label>
+                <div>
+                    <img src="{{ request.image_url }}" class="upload-preview" alt="Issue photo">
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Update Request Card -->
+        <div class="card">
+            <h3><i class="fas fa-edit"></i> Update Request</h3>
+            <form method="POST" action="{{ url_for('technician.view_request', id=request.id) }}">
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Update Status</label>
+                    <select name="status" class="form-control" required>
+                        <option value="pending" {% if request.status == 'pending' %}selected{% endif %}>
+                            <i class="fas fa-clock"></i> Pending
+                        </option>
+                        <option value="in_progress" {% if request.status == 'in_progress' %}selected{% endif %}>
+                            <i class="fas fa-spinner"></i> In Progress
+                        </option>
+                        <option value="completed" {% if request.status == 'completed' %}selected{% endif %}>
+                            <i class="fas fa-check"></i> Completed
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-money-bill-wave"></i> Estimated Cost (KSh)</label>
+                    <input type="number" name="estimated_cost" class="form-control" 
+                           value="{{ request.estimated_cost }}" placeholder="Enter estimated cost">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-check"></i> Completion Notes</label>
+                    <textarea name="completion_notes" class="form-control" rows="3" 
+                              placeholder="Add notes about the repair...">{{ request.completion_notes|default('') }}</textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Request
+                </button>
+            </form>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="card">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            <div class="d-flex" style="flex-direction: column; gap: 12px;">
+                <form method="POST" action="{{ url_for('technician.update_status', id=request.id) }}">
+                    <input type="hidden" name="status" value="in_progress">
+                    <button type="submit" class="btn btn-warning" style="width: 100%;">
+                        <i class="fas fa-play"></i> Start Work
+                    </button>
+                </form>
+                
+                <form method="POST" action="{{ url_for('technician.update_status', id=request.id) }}">
+                    <input type="hidden" name="status" value="completed">
+                    <button type="submit" class="btn btn-success" style="width: 100%;">
+                        <i class="fas fa-check"></i> Mark Complete
+                    </button>
+                </form>
+                
+                <a href="{{ url_for('technician.requests') }}" class="btn btn-outline-primary" style="width: 100%;">
+                    <i class="fas fa-arrow-left"></i> Back to Requests
+                </a>
+            </div>
+        </div>
+
+        <!-- Communication Thread -->
+        <div class="card full-width">
+            <h3><i class="fas fa-comments"></i> Communication with Tenant</h3>
+            <div class="message-container" style="max-height: 400px;">
+                {% if communications %}
+                    {% for comm in communications %}
+                    <div class="message-item">
+                        <div class="message-sender">
+                            <i class="fas fa-user-circle"></i> {{ comm.sender_name }}
+                            <span class="message-time">({{ comm.sender_role|capitalize }}) - {{ comm.timestamp.strftime('%b %d, %Y %I:%M %p') }}</span>
+                        </div>
+                        <div class="message-text">{{ comm.message }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center">No messages yet. Start a conversation with the tenant.</p>
+                {% endif %}
+            </div>
+            
+            <form method="POST" action="{{ url_for('technician.send_message', id=request.id) }}" style="margin-top: 16px;">
+                <div class="form-group">
+                    <label><i class="fas fa-pen"></i> Send Message to Tenant</label>
+                    <textarea name="message" class="form-control" rows="3" 
+                              placeholder="Type your message here..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

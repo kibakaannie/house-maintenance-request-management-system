@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Messages | Tenant{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-comments"></i> Messages
+        </h1>
+        <p class="page-subtitle">Communication with technicians and property managers</p>
+    </div>
+
+    <div class="summary-cards">
+        <!-- Message Filters -->
+        <div class="card" style="grid-column: span 2;">
+            <h3><i class="fas fa-filter"></i> Filter Messages</h3>
+            <div class="d-flex" style="gap: 16px; flex-wrap: wrap;">
+                <select id="requestFilter" class="form-control" style="width: auto;">
+                    <option value="all">All Requests</option>
+                    {% for req in all_requests %}
+                    <option value="{{ req.id }}">Request #{{ req.id }}: {{ req.title }}</option>
+                    {% endfor %}
+                </select>
+                <button onclick="filterMessages()" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+                <button onclick="resetFilter()" class="btn btn-outline-primary">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-envelope-open-text"></i> All Conversations
+        </h3>
+        
+        <div id="messagesContainer" class="message-container" style="max-height: 500px;">
+            {% if communications %}
+                {% for comm in communications %}
+                <div class="message-item" data-request-id="{{ comm.request_id }}">
+                    <div class="message-sender">
+                        <i class="fas fa-user-circle"></i> {{ comm.sender_name }}
+                        <span class="message-time">
+                            ({{ comm.sender_role|capitalize }}) - 
+                            Request #{{ comm.request_id }} - 
+                            {{ comm.timestamp.strftime('%b %d, %Y %I:%M %p') }}
+                        </span>
+                    </div>
+                    <div class="message-text">{{ comm.message }}</div>
+                    {% if comm.request_id %}
+                    <div class="mt-2">
+                        <a href="{{ url_for('tenant.view_maintenance', id=comm.request_id) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye"></i> View Request
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center">No messages yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Message Form -->
+    <div class="card" style="margin-top: 24px;">
+        <h3><i class="fas fa-paper-plane"></i> Send New Message</h3>
+        <form method="POST" action="{{ url_for('tenant.send_general_message') }}">
+            <div class="form-group">
+                <label>Related Maintenance Request (Optional)</label>
+                <select name="request_id" class="form-control">
+                    <option value="">General Message (No specific request)</option>
+                    {% for req in all_requests %}
+                    <option value="{{ req.id }}">Request #{{ req.id }}: {{ req.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Message</label>
+                <textarea name="message" class="form-control" rows="4" 
+                          placeholder="Type your message here..." required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Send Message
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+function filterMessages() {
+    const filterValue = document.getElementById('requestFilter').value;
+    const messages = document.querySelectorAll('.message-item');
+    
+    messages.forEach(message => {
+        if (filterValue === 'all') {
+            message.style.display = 'block';
+        } else {
+            const requestId = message.getAttribute('data-request-id');
+            if (requestId === filterValue) {
+                message.style.display = 'block';
+            } else {
+                message.style.display = 'none';
+            }
+        }
+    });
+}
+
+function resetFilter() {
+    document.getElementById('requestFilter').value = 'all';
+    filterMessages();
+}
+</script>
+{% endblock %}

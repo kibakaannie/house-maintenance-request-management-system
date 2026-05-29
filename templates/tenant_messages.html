@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Messages | Tenant{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <h1 style="color: #1e3c72;">
+            <i class="fas fa-envelope"></i> My Messages
+        </h1>
+        <p>Welcome to your messages, {{ user_name }}!</p>
+        <a href="/tenant/dashboard" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background: #1e3c72; color: white; text-decoration: none; border-radius: 5px;">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

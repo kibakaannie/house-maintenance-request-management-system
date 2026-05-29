@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Update Status | Request #{{ request.id }}{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <h3><i class="fas fa-tag"></i> Update Request Status</h3>
+        <p><strong>Request #{{ request.id }}:</strong> {{ request.title }}</p>
+        <p><strong>Current Status:</strong> 
+            <span class="badge badge-{{ request.status }}">
+                {{ request.status|replace('_', ' ')|capitalize }}
+            </span>
+        </p>
+        
+        <form method="POST" action="{{ url_for('technician.update_status', id=request.id) }}">
+            <div class="form-group">
+                <label>New Status</label>
+                <select name="status" class="form-control" required>
+                    <option value="pending" {% if request.status == 'pending' %}selected{% endif %}>
+                        Pending - Awaiting assignment or start
+                    </option>
+                    <option value="in_progress" {% if request.status == 'in_progress' %}selected{% endif %}>
+                        In Progress - Currently working on it
+                    </option>
+                    <option value="completed" {% if request.status == 'completed' %}selected{% endif %}>
+                        Completed - Work finished
+                    </option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Status Notes (Optional)</label>
+                <textarea name="notes" class="form-control" rows="4" 
+                          placeholder="Add details about the status change..."></textarea>
+            </div>
+            
+            <div class="d-flex" style="gap: 16px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Status
+                </button>
+                <a href="{{ url_for('technician.view_request', id=request.id) }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

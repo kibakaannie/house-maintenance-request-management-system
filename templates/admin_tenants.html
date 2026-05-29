@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Tenants Management | Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="color: #1e3c72;">
+                <i class="fas fa-users"></i> Tenants Management
+            </h1>
+            <p style="color: #666;">Total Tenants: <strong>{{ tenants|length }}</strong></p>
+        </div>
+        
+        <p style="color: #666; margin-bottom: 30px;">View all tenants, their unit details, and contact information</p>
+        
+        {% if tenants %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f8f9fa; border-bottom: 2px solid #e0e0e0;">
+                        <th style="padding: 15px; text-align: left;">Tenant Name</th>
+                        <th style="padding: 15px; text-align: left;">Property</th>
+                        <th style="padding: 15px; text-align: left;">Unit Number</th>
+                        <th style="padding: 15px; text-align: left;">Floor</th>
+                        <th style="padding: 15px; text-align: left;">Contact</th>
+                        <th style="padding: 15px; text-align: left;">Monthly Rent</th>
+                        <th style="padding: 15px; text-align: left;">Balance</th>
+                        <th style="padding: 15px; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tenant in tenants %}
+                    <tr style="border-bottom: 1px solid #e0e0e0; transition: background 0.3s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='white'">
+                        <td style="padding: 15px;">
+                            <strong>{{ tenant.name }}</strong><br>
+                            <small style="color: #666;">{{ tenant.email }}</small>
+                        </td>
+                        <td style="padding: 15px;">{{ tenant.property_name }}</td>
+                        <td style="padding: 15px;">
+                            <strong>{{ tenant.unit_number }}</strong>
+                        </td>
+                        <td style="padding: 15px;">{{ tenant.floor }}</td>
+                        <td style="padding: 15px;">
+                            <i class="fas fa-phone"></i> {{ tenant.phone }}<br>
+                            <i class="fas fa-envelope"></i> {{ tenant.email }}
+                        </td>
+                        <td style="padding: 15px; color: #28a745; font-weight: bold;">KSh {{ tenant.monthly_rent|format_currency }}</td>
+                        <td style="padding: 15px; {% if tenant.balance > 0 %}color: #dc3545; font-weight: bold;{% else %}color: #28a745;{% endif %}">
+                            KSh {{ tenant.balance|format_currency }}
+                        </td>
+                        <td style="padding: 15px; text-align: center;">
+                            <a href="/admin/tenant/{{ tenant.email }}" class="btn-view">View Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 60px; color: #999;">
+            <i class="fas fa-users" style="font-size: 48px; margin-bottom: 15px;"></i>
+            <p>No tenants found</p>
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 30px;">
+            <a href="/admin/dashboard" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-view {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #1e3c72;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 12px;
+    transition: background 0.3s;
+}
+.btn-view:hover {
+    background: #2a5298;
+}
+.btn-back {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+.btn-back:hover {
+    background: #5a6268;
+}
+</style>
+{% endblock %}

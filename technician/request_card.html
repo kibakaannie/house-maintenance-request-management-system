@@ -1,0 +1,58 @@
+<!-- Reusable component for displaying a request card -->
+<div class="request-card">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="request-title">
+                <i class="fas fa-tools"></i> {{ request.title }}
+            </h4>
+            <p class="request-meta">
+                <span><i class="fas fa-building"></i> Unit: {{ request.unit_number }}</span>
+                <span><i class="fas fa-calendar"></i> Submitted: {{ request.created_at.strftime('%b %d, %Y') }}</span>
+                <span>
+                    <i class="fas fa-tag"></i> 
+                    <span class="badge badge-{{ request.status }}">
+                        {{ request.status|replace('_', ' ')|capitalize }}
+                    </span>
+                </span>
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('technician.view_request', id=request.id) }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-eye"></i> View Details
+            </a>
+        </div>
+    </div>
+    
+    <div class="request-meta">
+        <div><strong>Description:</strong> {{ request.description|truncate(100) }}</div>
+        {% if request.estimated_cost %}
+        <div><strong>Est. Cost:</strong> KSh {{ request.estimated_cost|format_currency }}</div>
+        {% endif %}
+    </div>
+    
+    {% if request.image_url %}
+    <div class="mt-2">
+        <img src="{{ request.image_url }}" class="upload-thumbnail" alt="Issue photo">
+    </div>
+    {% endif %}
+    
+    <div class="d-flex gap-2 mt-3">
+        <form method="POST" action="{{ url_for('technician.update_status', id=request.id) }}" style="display: inline;">
+            <input type="hidden" name="status" value="in_progress">
+            <button type="submit" class="btn btn-sm btn-warning">
+                <i class="fas fa-play"></i> Start
+            </button>
+        </form>
+        
+        <form method="POST" action="{{ url_for('technician.update_status', id=request.id) }}" style="display: inline;">
+            <input type="hidden" name="status" value="completed">
+            <button type="submit" class="btn btn-sm btn-success">
+                <i class="fas fa-check"></i> Complete
+            </button>
+        </form>
+        
+        <a href="{{ url_for('technician.send_message', id=request.id) }}" class="btn btn-sm btn-outline-primary">
+            <i class="fas fa-comment"></i> Message
+        </a>
+    </div>
+</div>

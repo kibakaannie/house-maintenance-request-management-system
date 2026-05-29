@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}My Jobs | Technician{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <h1 style="color: #1e3c72; margin-bottom: 20px;">
+            <i class="fas fa-clipboard-list"></i> My Assigned Jobs
+        </h1>
+        
+        <p>Welcome, {{ user_name }}! Here are your assigned maintenance requests.</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" style="padding: 12px; margin-bottom: 20px; border-radius: 8px; 
+                        {% if category == 'success' %}background: #d4edda; color: #155724; border: 1px solid #c3e6cb;
+                        {% elif category == 'danger' %}background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <h3>Your Jobs ({{ assigned_requests|length }})</h3>
+        
+        {% if assigned_requests and assigned_requests|length > 0 %}
+            {% for request in assigned_requests %}
+            <div class="request-card" style="background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap;">
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 10px 0; color: #1e3c72;">
+                            #{{ request.id }} - {{ request.title }}
+                            <span class="status-{{ request.status }}" style="
+                                display: inline-block;
+                                padding: 3px 12px;
+                                border-radius: 20px;
+                                font-size: 12px;
+                                margin-left: 10px;
+                                {% if request.status == 'pending' %}background: #ffc107; color: #856404;
+                                {% elif request.status == 'in_progress' %}background: #17a2b8; color: white;
+                                {% elif request.status == 'completed' %}background: #28a745; color: white;
+                                {% endif %}">
+                                {{ request.status|replace('_', ' ')|capitalize }}
+                            </span>
+                        </h4>
+                        <p><strong>Tenant:</strong> {{ request.tenant_name }}</p>
+                        <p><strong>Description:</strong> {{ request.description }}</p>
+                        <p><strong>Priority:</strong> {{ request.priority|capitalize }}</p>
+                        <p><strong>Submitted:</strong> {{ request.date }}</p>
+                        
+                        {% if request.estimated_cost %}
+                            <p><strong>Estimated Cost:</strong> KSh {{ request.estimated_cost }}</p>
+                        {% endif %}
+                        
+                        <!-- Image display - FIXED: View button is OUTSIDE the if condition -->
+                        {% if request.image_url %}
+                            <div style="margin-top: 10px;">
+                                <strong>Issue Photo:</strong><br>
+                                <img src="{{ request.image_url }}" alt="Issue photo" style="max-width: 150px; max-height: 150px; border-radius: 8px; cursor: pointer; margin-top: 5px;" onclick="window.open(this.src)">
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="min-width: 200px; margin-left: 20px;">
+                        <!-- Update Status Form -->
+                        <form method="POST" action="/technician/update-status/{{ request.id }}">
+                            <select name="status" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                                <option value="in_progress" {% if request.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                                <option value="completed" {% if request.status == 'completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                            <input type="number" name="estimated_cost" placeholder="Estimated Cost (KSh)" 
+                                   value="{{ request.estimated_cost or '' }}" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; background: #1e3c72; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                Update Status
+                            </button>
+                        </form>
+                        
+                        <!-- View Details Button - FIXED: This appears for EVERY request, not just ones with images -->
+                        <a href="/technician/request/{{ request.id }}" class="btn btn-secondary" style="display: block; text-align: center; margin-top: 10px; padding: 10px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px;">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 60px; color: #999; border: 2px dashed #ddd; border-radius: 10px;">
+                <i class="fas fa-tools" style="font-size: 64px; margin-bottom: 20px; color: #ddd;"></i>
+                <p style="font-size: 18px;">No jobs assigned yet.</p>
+                <p>When the admin assigns a maintenance request to you, it will appear here.</p>
+            </div>
+        {% endif %}
+        
+        <div style="margin-top: 30px;">
+            <a href="/technician/dashboard" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+.btn-primary {
+    background: #1e3c72;
+    color: white;
+}
+.btn-primary:hover {
+    background: #2a5298;
+}
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+.btn-secondary:hover {
+    background: #5a6268;
+}
+</style>
+{% endblock %}

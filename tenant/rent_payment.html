@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Rent Payments | Tenant{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1 class="page-title">
+            <i class="fas fa-credit-card"></i> Rent Payments
+        </h1>
+        <p class="page-subtitle">View your rent status and payment history</p>
+    </div>
+
+    <!-- Rent Summary Card -->
+    <div class="summary-cards">
+        <div class="card">
+            <h3><i class="fas fa-chart-line"></i> Current Balance</h3>
+            <p class="card-value {% if tenant.balance > 0 %}text-danger{% else %}text-success{% endif %}">
+                {% if tenant.balance > 0 %}
+                    KSh {{ tenant.balance|format_currency }}
+                {% else %}
+                    <i class="fas fa-check-circle"></i> Up to Date
+                {% endif %}
+            </p>
+            <p class="card-meta">Monthly Rent: KSh {{ tenant.monthly_rent|format_currency }}</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-calendar"></i> Next Payment Due</h3>
+            <p class="card-value">{{ next_due_date.strftime('%B %d, %Y') if next_due_date else 'N/A' }}</p>
+            <p class="card-meta">Please pay by the due date to avoid arrears</p>
+        </div>
+        
+        <div class="card">
+            <h3><i class="fas fa-chart-pie"></i> Payment Status</h3>
+            <p class="card-value">{{ payment_percentage|default(0) }}%</p>
+            <p class="card-meta">of annual rent paid</p>
+        </div>
+    </div>
+
+    <!-- Payment History -->
+    <div class="section">
+        <h3 class="section-title">
+            <i class="fas fa-history"></i> Payment History
+        </h3>
+        
+        {% if payments %}
+        <div style="overflow-x: auto;">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Payment Method</th>
+                        <th>Reference Number</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.payment_date.strftime('%B %d, %Y') }}</td>
+                        <td class="text-success">KSh {{ payment.amount|format_currency }}</td>
+                        <td>
+                            <i class="fas {% if payment.method == 'mpesa' %}fa-mobile-alt{% elif payment.method == 'bank' %}fa-university{% else %}fa-credit-card{% endif %}"></i>
+                            {{ payment.method|capitalize }}
+                        </td>
+                        <td>{{ payment.reference|default('N/A') }}</td>
+                        <td><span class="badge badge-success">Completed</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No payment records found.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Make Payment Section -->
+    <div class="card" style="margin-top: 24px;">
+        <h3><i class="fas fa-money-bill-wave"></i> Make a Payment</h3>
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> Please use the following bank details to make your payment:
+        </div>
+        
+        <div class="summary-cards" style="margin-top: 16px;">
+            <div class="card">
+                <h4><i class="fas fa-university"></i> Bank Transfer</h4>
+                <p><strong>Bank:</strong> KCB Bank</p>
+                <p><strong>Account Name:</strong> PropManage Properties Ltd</p>
+                <p><strong>Account Number:</strong> 1234567890</p>
+                <p><strong>Branch:</strong> Nairobi Main</p>
+            </div>
+            
+            <div class="card">
+                <h4><i class="fas fa-mobile-alt"></i> M-PESA</h4>
+                <p><strong>Paybill Number:</strong> 123456</p>
+                <p><strong>Account Number:</strong> Your {{ tenant.unit_number }} (e.g., APT4B)</p>
+                <p><strong>Instructions:</strong> Go to M-PESA > Lipa na M-PESA > Paybill</p>
+            </div>
+        </div>
+        
+        <div class="form-group mt-3">
+            <label>Upload Payment Receipt (Optional)</label>
+            <input type="file" class="form-control" accept="image/*,.pdf">
+            <small class="text-muted">Upload your payment confirmation for faster verification</small>
+        </div>
+        
+        <button class="btn btn-success" onclick="alert('Payment confirmation sent. We will verify within 24 hours.')">
+            <i class="fas fa-check-circle"></i> Confirm Payment
+        </button>
+    </div>
+</div>
+{% endblock %}

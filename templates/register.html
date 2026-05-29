@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | PropManage</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+        .navbar { background: #1e3c72; color: white; padding: 1rem 2rem; }
+        .navbar a { color: white; text-decoration: none; margin: 0 1rem; }
+        .navbar a:hover { text-decoration: underline; }
+        .container { max-width: 500px; margin: 50px auto; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; margin-bottom: 20px; color: #1e3c72; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #333; font-weight: bold; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #1e3c72; }
+        button { width: 100%; padding: 12px; background: #1e3c72; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background: #2a5298; }
+        .text-center { text-align: center; margin-top: 20px; }
+        a { color: #1e3c72; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .alert { padding: 12px; margin: 15px 0; border-radius: 5px; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/">Home</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+    </nav>
+    <div class="container">
+        <div class="card">
+            <h2>Create New Account</h2> 
+            
+                        <div class="alert alert-{{ category }}"></div>
+
+            <form method="POST">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="full_name" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number (Optional)</label>
+                    <input type="tel" name="phone" placeholder="Enter your phone number">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Create a password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" name="confirm_password" placeholder="Confirm your password" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>I am a:</label>
+                    <select name="role" required>
+                        <option value="tenant">Tenant</option>
+                        <option value="technician">Technician</option>
+                        <option value="property_manager">Property Manager</option>
+                        <option value="landlord">Landlord</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Create Account</button>
+            </form>
+            
+            <div class="text-center">
+                <p>Already have an account? <a href="/login">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

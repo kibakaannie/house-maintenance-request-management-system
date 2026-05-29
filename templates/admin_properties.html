@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Properties Management{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1 style="color: #1e3c72;">Property Management</h1>
+    <p>Manage your properties here, {{ user_name }}!</p>
+    
+    <!-- Debug info to see if data is coming through -->
+    <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
+        <strong>Debug Info:</strong>
+        <p>Number of properties: {{ properties|length }}</p>
+        <p>Total units: {{ total_units }}</p>
+        <p>Total tenants: {{ total_tenants }}</p>
+    </div>
+    
+    <!-- Property Cards -->
+    {% if properties and properties|length > 0 %}
+        {% for property in properties %}
+        <div style="background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <h3>{{ property.name }}</h3>
+            <p><strong>Address:</strong> {{ property.address }}</p>
+            <p><strong>Total Units:</strong> {{ property.total_units }}</p>
+            <p><strong>Occupied:</strong> {{ property.occupied }}</p>
+            <p><strong>Vacant:</strong> {{ property.vacant }}</p>
+            <p><strong>Occupancy Rate:</strong> {{ property.occupancy_rate }}%</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin-top: 20px;">
+            <p>No properties found. No properties have been added yet.</p>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px;">
+        <a href="/admin/dashboard" style="background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
